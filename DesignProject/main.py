@@ -1,11 +1,19 @@
+import os
+# Suppress OpenCV warnings (MSMF backend warnings are harmless when using RealSense)
+# Must be set before importing cv2
+os.environ['OPENCV_LOG_LEVEL'] = 'ERROR'
+
 import cv2
 import numpy as np
+import warnings
 from camera_processor import CameraProcessor
 from board_detector import BoardDetector
 from piece_classifier import PieceClassifier
 from game_ai import TicTacToeAI
 
 def main():
+    # Suppress Python warnings from OpenCV
+    warnings.filterwarnings('ignore', category=UserWarning)
     # Configuration: Set which color the AI plays
     # Options: 'red' or 'blue'
     # Note: Red always goes first in Tic-Tac-Toe
