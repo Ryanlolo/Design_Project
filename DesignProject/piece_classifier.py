@@ -1,29 +1,44 @@
 import cv2
 import numpy as np
-import tensorflow as tf
-from tensorflow import keras
 import sys
-
-# Fix encoding for Windows console
-if sys.platform == 'win32':
-    import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-
-# Check GPU availability for inference
-if tf.config.list_physical_devices('GPU'):
-    print("[OK] Using GPU for piece classification!")
-else:
-    print("[INFO] Using CPU for piece classification")
+import os
+try:
+    import tensorflow as tf
+    # Try different ways to import keras based on TensorFlow version
+    if hasattr(tf, 'keras'):
+        keras = tf.keras
+    elif hasattr(tf, 'python') and hasattr(tf.python, 'keras'):
+        keras = tf.python.keras
+    else:
+        # Try standalone keras
+        try:
+            import keras
+        except ImportError:
+            keras = None
+except ImportError:
+    keras = None
 
 class PieceClassifier:
     def __init__(self, model_path=None):
-        if model_path and tf.io.gfile.exists(model_path):
-            self.model = keras.models.load_model(model_path)
-            self.use_cnn = True
+        self.model = None
+        self.use_cnn = False
+        
+        if model_path and os.path.exists(model_path) and keras is not None:
+            try:
+                self.model = keras.models.load_model(model_path)
+                self.use_cnn = True
+                print("CNN model loaded successfully!")
+            except Exception as e:
+                print(f"Failed to load CNN model: {e}")
+                print("Falling back to color recognition methods")
+                self.model = None
+                self.use_cnn = False
         else:
-            self.model = None
-            self.use_cnn = False
-            print("Use traditional color recognition methods")
+            if model_path and not os.path.exists(model_path):
+                print(f"Model file not found: {model_path}")
+            if keras is None:
+                print("Keras/TensorFlow not available")
+            print("Using traditional color recognition methods")
     
     def analyze_board(self, board_image):
         # Divide the chessboard into a 3x3 grid

@@ -4,7 +4,7 @@ import cv2
 
 
 class CameraProcessor:
-    def __init__(self, vertical_offset: int = -70, horizontal_offset: int = 180):
+    def __init__(self, vertical_offset: int = 0, horizontal_offset: int = 0):
         """
         vertical_offset: pixels to shift the view.
             > 0: move view upward, pad bottom
