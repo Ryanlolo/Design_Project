@@ -56,7 +56,7 @@ def load_training_data(data_dir):
                 
                 images.append(img)
                 
-                # Create one-hot tag
+                # Create one-hot label
                 label = [0, 0, 0]
                 label[class_idx] = 1
                 labels.append(label)
@@ -65,7 +65,7 @@ def load_training_data(data_dir):
 
 def train():
     # Load data
-    print("Load training data...")
+    print("Loading training data...")
     X_train, y_train = load_training_data('training_data')
     
     if len(X_train) == 0:
@@ -77,7 +77,7 @@ def train():
     # Create model
     model = create_model()
     
-    # data enhancement
+    # Data augmentation
     datagen = keras.preprocessing.image.ImageDataGenerator(
         rotation_range=20,
         width_shift_range=0.2,
@@ -86,8 +86,8 @@ def train():
         validation_split=0.2
     )
     
-    # Training model
-    print("Start training the model...")
+    # Train model
+    print("Starting model training...")
     history = model.fit(
         datagen.flow(X_train, y_train, batch_size=32, subset='training'),
         epochs=30,
